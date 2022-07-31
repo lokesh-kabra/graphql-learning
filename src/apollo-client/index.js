@@ -7,7 +7,7 @@ const client = new ApolloClient({
   request: operation => {
     operation.setContext({
       headers: {
-        authorization: 'Bearer ==GITHUB_PERSONAL_ACCESS_TOKEN==',
+        authorization: `Bearer ${process.env.GITHUB_PERSONAL_ACCESS_TOKEN}`,
       },
     });
   },
@@ -54,8 +54,8 @@ client
     const { pageInfo, edges } = result.data.organization.repositories;
     const { endCursor, hasNextPage } = pageInfo;
 
-    console.log('second page', edges.length);
-    console.log('endCursor', endCursor);
+    //console.log('second page', edges.length);
+    //console.log('endCursor', endCursor);
 
     return pageInfo;
   })
@@ -78,8 +78,8 @@ client
     const { pageInfo, edges } = result.data.organization.repositories;
     const { endCursor, hasNextPage } = pageInfo;
 
-    console.log('second page', edges.length);
-    console.log('endCursor', endCursor);
+    //console.log('second page', edges.length);
+    //console.log('endCursor', endCursor);
 
     return pageInfo;
   })
@@ -97,10 +97,29 @@ const ADD_STAR = gql`
   }
 `;
 
+const REMOVE_STAR = gql`
+  mutation RemoveStar($repositoryId: ID!) {
+    removeStar(input: { starrableId: $repositoryId }) {
+      starrable {
+        id
+        viewerHasStarred
+      }
+    }
+  }
+`;
 
 client
   .mutate({
     mutation: ADD_STAR,
+    variables: {
+      repositoryId: 'MDEwOlJlcG9zaXRvcnk2MzM1MjkwNw==',
+    },
+  })
+  .then(console.log);
+
+client
+  .mutate({
+    mutation: REMOVE_STAR,
     variables: {
       repositoryId: 'MDEwOlJlcG9zaXRvcnk2MzM1MjkwNw==',
     },
